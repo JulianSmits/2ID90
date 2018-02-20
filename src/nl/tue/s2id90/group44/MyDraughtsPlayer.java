@@ -116,8 +116,22 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
         if (stopped) { stopped = false; throw new AIStoppedException(); }
         DraughtsState state = node.getState();
         // ToDo: write an alphabeta search to compute bestMove and value
-        Move bestMove = state.getMoves().get(0);
-        int value = 0;
+        List<Move> moves = state.getMoves(); // get all the moves
+        int lastValue = alpha; // initialize starting values
+        int value = alpha;
+        Move bestMove = moves.get(0);
+        
+        for (Move move : moves) { //loop over all the moves
+            state.doMove(move);
+            
+            value = Math.min(value, alphaBetaMax(node, alpha, beta, depth-1));
+            if(value < lastValue){ // set better move as best move if possible
+                bestMove = move;
+            }
+            
+            state.undoMove(move);
+        }
+
         node.setBestMove(bestMove);
         return value;
      }
@@ -126,9 +140,22 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
             throws AIStoppedException {
         if (stopped) { stopped = false; throw new AIStoppedException(); }
         DraughtsState state = node.getState();
-        // ToDo: write an alphabeta search to compute bestMove and value
-        Move bestMove = state.getMoves().get(0);
-        int value = 0;
+        
+        List<Move> moves = state.getMoves(); // get all the moves
+        int lastValue = beta; // initialize starting values
+        int value = beta;
+        Move bestMove = moves.get(0);
+        
+        for (Move move : moves) { //loop over all the moves
+            state.doMove(move);
+            
+            value = Math.max(value, alphaBetaMax(node, alpha, beta, depth-1));
+            if(value > lastValue){ // set better move as best move if possible
+                bestMove = move;
+            }
+            
+            state.undoMove(move);
+        }
         node.setBestMove(bestMove);
         return value;
     }
