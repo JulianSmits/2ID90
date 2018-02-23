@@ -111,22 +111,27 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
      * @return the compute value of this node
      * @throws AIStoppedException thrown whenever the boolean stopped has been set to true.
      */
-     int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
+int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
             throws AIStoppedException {
         if (stopped) { stopped = false; throw new AIStoppedException(); }
         DraughtsState state = node.getState();
         // ToDo: write an alphabeta search to compute bestMove and value
         List<Move> moves = state.getMoves(); // get all the moves
-        int lastValue = alpha; // initialize starting values
-        int value = alpha;
+        int lastValue = beta; // initialize starting values
+        int value = beta;
         Move bestMove = moves.get(0);
         
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
             
-            value = Math.min(value, alphaBetaMax(node, alpha, beta, depth-1));
+            if (depth > 0) {
+                value = Math.min(value, alphaBetaMax(node, alpha, value, depth-1));
+            } else {
+                value = Math.min(value, evaluate(state));
+            }
             if(value < lastValue){ // set better move as best move if possible
                 bestMove = move;
+                lastValue = value;
             }
             
             state.undoMove(move);
@@ -142,16 +147,20 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
         DraughtsState state = node.getState();
         
         List<Move> moves = state.getMoves(); // get all the moves
-        int lastValue = beta; // initialize starting values
-        int value = beta;
+        int lastValue = alpha; // initialize starting values
+        int value = alpha;
         Move bestMove = moves.get(0);
         
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
-            
-            value = Math.max(value, alphaBetaMax(node, alpha, beta, depth-1));
+            if (depth > 0) {
+                value = Math.max(value, alphaBetaMin(node, value, beta, depth-1));
+            } else {
+                value = Math.max(value, evaluate(state));
+            }
             if(value > lastValue){ // set better move as best move if possible
                 bestMove = move;
+                lastValue = value;
             }
             
             state.undoMove(move);
@@ -172,9 +181,9 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
                         break;
                 case 2: blackPieces++;
                         break;
-                case 3: whitePieces += 2;
+                case 3: whitePieces += 3;
                         break;
-                case 4: blackPieces += 2;
+                case 4: blackPieces += 3;
                         break;   
             }
         }
