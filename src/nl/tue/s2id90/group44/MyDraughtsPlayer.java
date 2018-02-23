@@ -124,7 +124,7 @@ int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
             
-            if (depth > 0) {
+            if (depth > 0 && !state.isEndState()) {
                 value = Math.min(value, alphaBetaMax(node, alpha, value, depth-1));
             } else {
                 value = Math.min(value, evaluate(state));
@@ -153,7 +153,7 @@ int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
         
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
-            if (depth > 0) {
+            if (depth > 0 && !state.isEndState()) {
                 value = Math.max(value, alphaBetaMin(node, value, beta, depth-1));
             } else {
                 value = Math.max(value, evaluate(state));
