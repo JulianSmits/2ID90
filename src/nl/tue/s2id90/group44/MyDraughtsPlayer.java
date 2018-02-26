@@ -46,8 +46,13 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
         } catch (AIStoppedException ex) {  /* nothing to do */  }
         
         if (bestMove==null) {
-            System.err.println("no valid move found!");
-            return getRandomValidMove(s);
+            if (node.getBestMove() != null) {
+                System.err.println("take last move!");
+                return node.getBestMove();
+            } else {
+                System.err.println("no valid move found!");
+                return getRandomValidMove(s);
+            }
         } else {
             return bestMove;
         }
