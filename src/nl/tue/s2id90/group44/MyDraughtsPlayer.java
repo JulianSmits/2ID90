@@ -88,9 +88,17 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
             throws AIStoppedException
     {
         if (node.getState().isWhiteToMove()) {
-            return alphaBetaMax(node, alpha, beta, depth);
+            int returnValue = alphaBetaMax(node, alpha, beta, 1);
+            for(int i = 2; i < depth; i++) {
+                returnValue = alphaBetaMax(node, alpha, beta, depth);
+            }
+            return returnValue;
         } else  {
-            return alphaBetaMin(node, alpha, beta, depth);
+            int returnValue = alphaBetaMin(node, alpha, beta, 1);
+            for(int i = 2; i < depth; i++) {
+                returnValue = alphaBetaMin(node, alpha, beta, depth);
+            }
+            return returnValue;
         }
     }
     
