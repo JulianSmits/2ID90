@@ -17,6 +17,7 @@ import org10x10.dam.game.Move;
 public class MyDraughtsPlayer  extends DraughtsPlayer{
     private int bestValue=0;
     int maxSearchDepth;
+    int currentSearchDepth = 1;
     
     /** boolean that indicates that the GUI asked the player to stop thinking. */
     private boolean stopped;
@@ -29,14 +30,14 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
     @Override public Move getMove(DraughtsState s) {
         Move bestMove = null;
         bestValue = 0;
-        DraughtsNode node = new DraughtsNode(s);    // the root of the search tree
+        DraughtsNode node = new DraughtsNode(s.clone());    // the root of the search tree  
         try {
             // compute bestMove and bestValue in a call to alphabeta
             bestValue = alphaBeta(node, MIN_VALUE, MAX_VALUE, maxSearchDepth);
             
             // store the bestMove found uptill now
             // NB this is not done in case of an AIStoppedException in alphaBeat()
-            bestMove  = node.getBestMove();
+            
             
             // print the results for debugging reasons
             System.err.format(
@@ -45,14 +46,11 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
             );
         } catch (AIStoppedException ex) {  /* nothing to do */  }
         
+        bestMove  = node.getBestMove();
+        
         if (bestMove==null) {
-            if (node.getBestMove() != null) {
-                System.err.println("take last move!");
-                return node.getBestMove();
-            } else {
-                System.err.println("no valid move found!");
-                return getRandomValidMove(s);
-            }
+            System.err.println("no valid move found!");
+            return getRandomValidMove(s);
         } else {
             return bestMove;
         }
@@ -95,13 +93,17 @@ public class MyDraughtsPlayer  extends DraughtsPlayer{
         if (node.getState().isWhiteToMove()) {
             int returnValue = alphaBetaMax(node, alpha, beta, 1);
             for(int i = 2; i < depth; i++) {
-                returnValue = alphaBetaMax(node, alpha, beta, depth);
+                currentSearchDepth = i;
+                returnValue = alphaBetaMax(node, alpha, beta, i);
+                bestValue = returnValue;
             }
-            return returnValue;
+            return returnValue;           
         } else  {
             int returnValue = alphaBetaMin(node, alpha, beta, 1);
             for(int i = 2; i < depth; i++) {
-                returnValue = alphaBetaMin(node, alpha, beta, depth);
+                currentSearchDepth = i;
+                returnValue = alphaBetaMin(node, alpha, beta, i);
+                bestValue = returnValue;
             }
             return returnValue;
         }
@@ -142,16 +144,19 @@ int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
             } else {
                 value = Math.min(value, evaluate(state));
             }
-            if(value < lastValue){ // set better move as best move if possible
+            if(value < lastValue) { // set better move as best move if possible
                 bestMove = move;
                 lastValue = value;
             }
             
             state.undoMove(move);
         }
-
-        node.setBestMove(bestMove);
-        return value;
+        
+        if(currentSearchDepth == depth) {
+            node.setBestMove(bestMove);
+            System.err.println("depth= " + depth);
+        }        
+        return lastValue;
      }
     
     int alphaBetaMax(DraughtsNode node, int alpha, int beta, int depth)
@@ -178,8 +183,12 @@ int alphaBetaMin(DraughtsNode node, int alpha, int beta, int depth)
             
             state.undoMove(move);
         }
-        node.setBestMove(bestMove);
-        return value;
+        
+        if(currentSearchDepth == depth) {
+            node.setBestMove(bestMove);
+            System.err.println("depth= " + depth);
+        }        
+        return lastValue;
     }
 
     /** A method that evaluates the given state. */
