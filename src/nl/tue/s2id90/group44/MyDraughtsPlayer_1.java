@@ -15,7 +15,7 @@ import org10x10.dam.game.Move;
  */
 // ToDo: rename this class (and hence this file) to have a distinct name
 //       for your player during the tournament
-public class MyDraughtsPlayer extends DraughtsPlayer {
+public class MyDraughtsPlayer_1 extends DraughtsPlayer {
 
     private int bestValue = 0;
     int maxSearchDepth;
@@ -29,7 +29,7 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
      */
     private boolean stopped;
 
-    public MyDraughtsPlayer(int maxSearchDepth) {
+    public MyDraughtsPlayer_1(int maxSearchDepth) {
         super("best.png"); // ToDo: replace with your own icon
         this.maxSearchDepth = maxSearchDepth;
     }
@@ -45,11 +45,12 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
 
             // store the bestMove found uptill now
             // NB this is not done in case of an AIStoppedException in alphaBeat()
+
         } catch (AIStoppedException ex) {
             /* nothing to do */        }
 
         bestMove = node.getBestMove();
-
+        
         // print the results for debugging reasons
         System.err.format(
                 "%s: depth= %2d, best move = %5s, value=%d\n",
@@ -78,7 +79,7 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
     /**
      * Tries to make alphabeta search stop. Search should be implemented such
      * that it throws an AIStoppedException when boolean stopped is set to true;
-    *
+     *
      */
     @Override
     public void stop() {
@@ -229,17 +230,13 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
         int[] pieces = state.getPieces();
         int whitePieces = 0;
         int blackPieces = 0;
-        int whitePosition = 0;
-        int blackPosition = 0;
-        for (int i = 1; i < pieces.length; i++) {
+        for (int i = 0; i < pieces.length; i++) {
             switch (pieces[i]) {
                 case 1:
                     whitePieces++;
-                    whitePosition += evalArray[i-1];
                     break;
                 case 2:
                     blackPieces++;
-                    blackPosition += evalArray[i-1];
                     break;
                 case 3:
                     whitePieces += 3;
@@ -249,8 +246,6 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
                     break;
             }
         }
-        int materialDiff = whitePieces - blackPieces;
-        int positionDiff = whitePosition - blackPosition;
-        return (30 * materialDiff + 1 * positionDiff)/10;
-    }    
+        return whitePieces - blackPieces;
+    }
 }

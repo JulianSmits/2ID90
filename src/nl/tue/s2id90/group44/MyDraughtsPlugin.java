@@ -23,7 +23,8 @@ public class MyDraughtsPlugin extends DraughtsPlayerProvider implements Draughts
         super(new MyDraughtsPlayer(20),
                 new UninformedPlayer(),
                 new OptimisticPlayer(),
-                new BuggyPlayer()
+                new BuggyPlayer(),
+                new MyDraughtsPlayer_1(20)
         );
     }
 }
