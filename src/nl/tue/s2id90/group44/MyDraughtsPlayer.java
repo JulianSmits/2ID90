@@ -2,6 +2,8 @@ package nl.tue.s2id90.group44;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import nl.tue.s2id90.draughts.DraughtsState;
@@ -21,8 +23,12 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
     int maxSearchDepth;
     int currentSearchDepth = 1;
     int[] evalArray = new int[]{9, 10, 10, 10, 9, 6, 7, 8, 7, 6, 4, 5, 7, 5, 4,
-        3, 4, 6, 6, 4, 3, 4, 5, 4, 3, 1, 3, 4, 3, 1, 1, 3, 3, 1, 0, 0, 1, 2, 1,
-        0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0};
+    3, 4, 6, 6, 4, 3, 4, 5, 4, 3, 1, 3, 4, 3, 1, 1, 3, 3, 1, 0, 0, 1, 2, 1,
+    0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0};
+    ArrayList<Integer> leftSide = new ArrayList<>(Arrays.asList(1, 2, 6, 7, 8,
+    11, 12, 16, 17, 18, 21, 22, 26, 27, 28, 31, 31, 36, 37, 38, 41, 41, 46, 47,
+    48));
+    boolean playsWhite;
 
     /**
      * boolean that indicates that the GUI asked the player to stop thinking.
@@ -39,6 +45,13 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
         Move bestMove = null;
         bestValue = 0;
         DraughtsNode node = new DraughtsNode(s.clone());    // the root of the search tree  
+        
+        if(s.isWhiteToMove()){
+            playsWhite = true;
+        } else {
+            playsWhite = false;
+        }
+                
         try {
             // compute bestMove and bestValue in a call to alphabeta
             bestValue = alphaBeta(node, MIN_VALUE, MAX_VALUE, maxSearchDepth);
@@ -169,7 +182,7 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
             if (depth > 0 && !state.isEndState()) {
                 value = Math.min(value, alphaBetaMax(node, alpha, value, depth - 1));
             } else {
-                value = Math.min(value, evaluate(state));
+                value = Math.min(value, evaluate(state, depth));
             }
             if (value < lastValue) { // set better move as best move if possible
                 bestMove = move;
@@ -204,7 +217,7 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
             if (depth > 0 && !state.isEndState()) {
                 value = Math.max(value, alphaBetaMin(node, value, beta, depth - 1));
             } else {
-                value = Math.max(value, evaluate(state));
+                value = Math.max(value, evaluate(state, depth));
             }
             if (value > lastValue) { // set better move as best move if possible
                 bestMove = move;
@@ -225,21 +238,34 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
      * A method that evaluates the given state.
      */
     // ToDo: write an appropriate evaluation function
-    int evaluate(DraughtsState state) {
+    int evaluate(DraughtsState state, int depth) {
         int[] pieces = state.getPieces();
         int whitePieces = 0;
         int blackPieces = 0;
         int whitePosition = 0;
         int blackPosition = 0;
+        int piecesLeft = 0;
+        int piecesRight = 0; 
+        
         for (int i = 1; i < pieces.length; i++) {
             switch (pieces[i]) {
                 case 1:
                     whitePieces++;
                     whitePosition += evalArray[i-1];
+                    if(playsWhite && leftSide.contains(i)){
+                        piecesLeft++;
+                    } else if(playsWhite){
+                        piecesRight++;
+                    }                    
                     break;
                 case 2:
                     blackPieces++;
-                    blackPosition += evalArray[i-1];
+                    blackPosition += evalArray[50-i];
+                    if(!playsWhite && leftSide.contains(i)){
+                        piecesLeft++;
+                    } else if(!playsWhite){
+                        piecesRight++;
+                    }   
                     break;
                 case 3:
                     whitePieces += 3;
@@ -248,9 +274,16 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
                     blackPieces += 3;
                     break;
             }
+            
         }
         int materialDiff = whitePieces - blackPieces;
         int positionDiff = whitePosition - blackPosition;
-        return (30 * materialDiff + 1 * positionDiff)/10;
+        int balance = piecesLeft - piecesRight;
+        
+        for(int i = 0; i < leftSide.size(); i++){
+            evalArray[i] -= balance;
+        }
+        
+        return (20 * materialDiff + 1 * positionDiff)/1;
     }    
 }
