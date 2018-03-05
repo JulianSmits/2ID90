@@ -22,26 +22,26 @@ public class Ares extends DraughtsPlayer {
     private int bestValue = 0;
     int maxSearchDepth;
     int currentSearchDepth = 1;
-    int[] evalArray = new int[]{9, 10, 10, 10, 9, 6, 7, 8, 7, 6, 4, 5, 7, 5, 4,
-        3, 4, 6, 6, 4, 3, 4, 5, 4, 3, 1, 3, 4, 3, 1, 1, 3, 3, 1, 0, 0, 1, 2, 1,
-        0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0};
+    int[] evalArray = new int[]{8, 8, 8, 8, 8, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 4,
+        4, 5, 4, 4, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 1, 2, 2, 2, 1, 0, 1, 2, 1, 0,
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
     ArrayList<Integer> leftSide = new ArrayList<>(Arrays.asList(1, 2, 6, 7, 8,
             11, 12, 16, 17, 18, 21, 22, 26, 27, 28, 31, 32, 36, 37, 38, 41, 42, 46, 47,
             48));
-    int[] diagonalArray = new int[]{1, 7, 12, 18, 23, 29, 34, 40, 45, 0, 
-        2, 8, 13, 19, 24, 30, 35, 0, 
-        3, 9, 14, 20, 25, 0, 
-        4, 10, 15, 0, 
-        6, 11, 17, 22, 28, 33, 39, 44, 50, 0, 
-        16, 21, 27, 32, 38, 43, 49, 0, 
-        26, 31, 37, 42, 48, 0, 
-        36, 41, 47, 0, 
-        5, 10, 14, 19, 23, 28, 32, 37, 41, 46, 0, 
-        4, 9, 13, 18, 22, 27, 31, 36, 0, 
-        3, 8, 12, 17, 21, 26, 0, 
-        2, 7, 11, 16, 0, 
-        15, 20, 24, 29, 33, 38, 42, 47, 0, 
-        25, 30, 34, 39, 43, 48, 0, 
+    int[] diagonalArray = new int[]{1, 7, 12, 18, 23, 29, 34, 40, 45, 0,
+        2, 8, 13, 19, 24, 30, 35, 0,
+        3, 9, 14, 20, 25, 0,
+        4, 10, 15, 0,
+        6, 11, 17, 22, 28, 33, 39, 44, 50, 0,
+        16, 21, 27, 32, 38, 43, 49, 0,
+        26, 31, 37, 42, 48, 0,
+        36, 41, 47, 0,
+        5, 10, 14, 19, 23, 28, 32, 37, 41, 46, 0,
+        4, 9, 13, 18, 22, 27, 31, 36, 0,
+        3, 8, 12, 17, 21, 26, 0,
+        2, 7, 11, 16, 0,
+        15, 20, 24, 29, 33, 38, 42, 47, 0,
+        25, 30, 34, 39, 43, 48, 0,
         35, 40, 44, 49};
 
     /**
@@ -247,7 +247,7 @@ public class Ares extends DraughtsPlayer {
         int blackBalance = 0;
         int whiteDiagonal = 0;
         int blackDiagonal = 0;
-        
+
         int black = 0;
         int white = 0;
         for (int i : diagonalArray) {
@@ -271,7 +271,7 @@ public class Ares extends DraughtsPlayer {
                 }
             }
         }
-                
+
         for (int i = 1; i < pieces.length; i++) {
             switch (pieces[i]) {
             case 1:
@@ -305,7 +305,7 @@ public class Ares extends DraughtsPlayer {
         int positionDiff = whitePosition - blackPosition;
         int balanceDiff = (10 - Math.abs(whiteBalance)) - (10 - Math.abs(blackBalance));
         int diagonalDiff = whiteDiagonal - blackDiagonal;
-        
+
         int balance;
         int position;
         int material;
@@ -316,20 +316,20 @@ public class Ares extends DraughtsPlayer {
             material = whitePieces;
             diagonal = whiteDiagonal;
             if (blackPieces == 0) {
-                result += 100;
+                result += 1000;
             }
         } else {
-            position = - blackPosition;
+            position = -blackPosition;
             balance = Math.abs(blackBalance) - 10;
-            material = - blackPieces;
-            diagonal = - blackDiagonal;
+            material = -blackPieces;
+            diagonal = -blackDiagonal;
             if (whitePieces == 0) {
-                result += 100;
+                result += 1000;
             }
         }
-        result += (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal) / 10;
+        result += (20 * materialDiff + 5 * positionDiff + 2 * balanceDiff + 10 * diagonalDiff + 3 * position + 1 * balance + 5 * material + 4 * diagonal);
 
         return result;
     }
-    
+
 }
