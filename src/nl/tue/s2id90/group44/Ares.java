@@ -17,7 +17,7 @@ import org10x10.dam.game.Move;
  */
 // ToDo: rename this class (and hence this file) to have a distinct name
 //       for your player during the tournament
-public class MyDraughtsPlayer extends DraughtsPlayer {
+public class Ares extends DraughtsPlayer {
 
     private int bestValue = 0;
     int maxSearchDepth;
@@ -34,8 +34,8 @@ public class MyDraughtsPlayer extends DraughtsPlayer {
      */
     private boolean stopped;
 
-    public MyDraughtsPlayer(int maxSearchDepth) {
-        super("best.png"); // ToDo: replace with your own icon
+    public Ares(int maxSearchDepth) {
+        super("ares.png"); // ToDo: replace with your own icon
         this.maxSearchDepth = maxSearchDepth;
     }
 
