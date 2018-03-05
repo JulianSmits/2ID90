@@ -303,43 +303,24 @@ public class Ares extends DraughtsPlayer {
         int materialDiff = whitePieces - blackPieces;
         int positionDiff = whitePosition - blackPosition;
         int balanceDiff = (10 - Math.abs(whiteBalance)) - (10 - Math.abs(blackBalance));
+        int diagonalDiff = whiteDiagonal - blackDiagonal;
         int balance;
         int position;
         int material;
+        int diagonal;
         if (state.isWhiteToMove()) {
             position = whitePosition;
             balance = 10 - Math.abs(whiteBalance);
             material = whitePieces;
+            diagonal = whiteDiagonal;
         } else {
-            position = -blackPosition;
+            position = - blackPosition;
             balance = Math.abs(blackBalance) - 10;
-            material = blackPieces;
+            material = - blackPieces;
+            diagonal = - blackDiagonal;
         }
 
-        return (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * position + 1 * balance + 1 * material) / 10;
+        return (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1* diagonal) / 10;
     }
     
-    int[] countDiagonal(int i, int[] pieces) {
-        int[] diagonals = new int[2];
-            diagonals[0] = 0;
-            diagonals[1] = 0;
-                int black = 0;
-                int white = 0;
-                if (pieces[i] == 1) {
-                    white++;
-                    black = 0;
-                } else if (pieces[i] == 2) {
-                    black++;
-                    white = 0;
-                }
-                if (black == 3) {
-                    diagonals[1]++;
-                    black = 0;
-                } else if (white == 3) {
-                    diagonals[0]++;
-                    white = 0;
-                }
-            
-            return diagonals;
-    }
 }
