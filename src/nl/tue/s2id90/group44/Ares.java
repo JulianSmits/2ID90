@@ -304,6 +304,7 @@ public class Ares extends DraughtsPlayer {
         int positionDiff = whitePosition - blackPosition;
         int balanceDiff = (10 - Math.abs(whiteBalance)) - (10 - Math.abs(blackBalance));
         int diagonalDiff = whiteDiagonal - blackDiagonal;
+        
         int balance;
         int position;
         int material;
@@ -320,7 +321,7 @@ public class Ares extends DraughtsPlayer {
             diagonal = - blackDiagonal;
         }
 
-        return (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1* diagonal) / 10;
+        return (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal) / 10;
     }
     
 }
