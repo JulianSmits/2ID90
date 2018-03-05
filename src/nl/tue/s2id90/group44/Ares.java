@@ -173,7 +173,6 @@ public class Ares extends DraughtsPlayer {
         int lastValue = beta; // initialize starting values
         int value = beta;
         Move bestMove = moves.get(0);
-        boolean skip = false;
 
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
@@ -184,7 +183,6 @@ public class Ares extends DraughtsPlayer {
                     value = evaluate(state);
                 }
             } else {
-                skip = true;
                 if (depth > 0 && !state.isEndState()) {
                     value = alphaBetaMax(node, alpha, lastValue, depth);
                 } else {
@@ -199,7 +197,7 @@ public class Ares extends DraughtsPlayer {
             state.undoMove(move);
         }
 
-        if (currentSearchDepth == depth && !skip) {
+        if (currentSearchDepth == depth) {
             node.setBestMove(bestMove);
             System.err.println("depth= " + depth);
         }
@@ -218,7 +216,6 @@ public class Ares extends DraughtsPlayer {
         int lastValue = alpha; // initialize starting values
         int value = alpha;
         Move bestMove = moves.get(0);
-        boolean skip = false;
 
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
@@ -229,7 +226,6 @@ public class Ares extends DraughtsPlayer {
                     value = evaluate(state);
                 }
             } else {
-                skip = true;
                 if (depth > 0 && !state.isEndState()) {
                     value = alphaBetaMin(node, lastValue, beta, depth);
                 } else {
@@ -244,7 +240,7 @@ public class Ares extends DraughtsPlayer {
             state.undoMove(move);
         }
 
-        if (currentSearchDepth == depth && !skip) {
+        if (currentSearchDepth == depth) {
             node.setBestMove(bestMove);
             System.err.println("depth= " + depth);
         }
