@@ -237,6 +237,7 @@ public class Ares extends DraughtsPlayer {
      */
     // ToDo: write an appropriate evaluation function
     int evaluate(DraughtsState state) {
+        int result = 0;
         int[] pieces = state.getPieces();
         int whitePieces = 0;
         int blackPieces = 0;
@@ -314,14 +315,21 @@ public class Ares extends DraughtsPlayer {
             balance = 10 - Math.abs(whiteBalance);
             material = whitePieces;
             diagonal = whiteDiagonal;
+            if (blackPieces == 0) {
+                result += 100;
+            }
         } else {
             position = - blackPosition;
             balance = Math.abs(blackBalance) - 10;
             material = - blackPieces;
             diagonal = - blackDiagonal;
+            if (whitePieces == 0) {
+                result += 100;
+            }
         }
+        result += (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal) / 10;
 
-        return (20 * materialDiff + 1 * positionDiff + 1 * balanceDiff + 1 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal) / 10;
+        return result;
     }
     
 }
