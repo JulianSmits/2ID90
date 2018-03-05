@@ -327,7 +327,7 @@ public class Ares extends DraughtsPlayer {
                 result += 1000;
             }
         }
-        result += (20 * materialDiff + 5 * positionDiff + 2 * balanceDiff + 10 * diagonalDiff + 3 * position + 1 * balance + 5 * material + 4 * diagonal);
+        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal);
 
         return result;
     }
