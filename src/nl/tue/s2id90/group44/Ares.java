@@ -21,8 +21,9 @@ public class Ares extends DraughtsPlayer {
 
     private int bestValue = 0;
     int maxSearchDepth;
+    // variable to keep track at which depth to search for iterative deepening
     int currentSearchDepth = 1;
-    // Array with a value for each position
+    // Array with an evaluation for each position
     int[] evalArray = new int[]{8, 8, 8, 8, 8, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 4,
         4, 5, 4, 4, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 1, 2, 2, 2, 1, 0, 1, 2, 1, 0,
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
@@ -30,7 +31,8 @@ public class Ares extends DraughtsPlayer {
     ArrayList<Integer> leftSide = new ArrayList<>(Arrays.asList(1, 2, 6, 7, 8,
             11, 12, 16, 17, 18, 21, 22, 26, 27, 28, 31, 32, 36, 37, 38, 41, 42, 46, 47,
             48));
-    // Array with all the possible diagonals in it
+    // Array with all the possible diagonals of length of at least 3.
+    // each diagonal is separated by a 0.
     int[] diagonalArray = new int[]{1, 7, 12, 18, 23, 29, 34, 40, 45, 0,
         2, 8, 13, 19, 24, 30, 35, 0,
         3, 9, 14, 20, 25, 0,
@@ -179,13 +181,13 @@ public class Ares extends DraughtsPlayer {
 
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
-            if (moves.size() != 1) { 
-                if (depth > 0 && !state.isEndState()) {
+            if (moves.size() != 1) { //check if there is a forced move
+                if (depth > 0 && !state.isEndState()) { //when the leaf is not reached yet
                     value = alphaBetaMax(node, alpha, lastValue, depth - 1);
-                } else {
+                } else { //leaf is reached
                     value = evaluate(state);
                 }
-            } else {
+            } else { //move is forced
                 if (depth > 0 && !state.isEndState()) {
                     value = alphaBetaMax(node, alpha, lastValue, depth);
                 } else {
@@ -224,13 +226,13 @@ public class Ares extends DraughtsPlayer {
 
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
-            if (moves.size() != 1) {
-                if (depth > 0 && !state.isEndState()) {
+            if (moves.size() != 1) { //check if there is a forced move
+                if (depth > 0 && !state.isEndState()) { //when the leaf is not reached yet
                     value = alphaBetaMin(node, lastValue, beta, depth - 1);
-                } else {
+                } else { //leaf is reached
                     value = evaluate(state);
                 }
-            } else {
+            } else { //move is forced
                 if (depth > 0 && !state.isEndState()) {
                     value = alphaBetaMin(node, lastValue, beta, depth);
                 } else {
@@ -331,30 +333,19 @@ public class Ares extends DraughtsPlayer {
         int balanceDiff = (10 - Math.abs(whiteBalance)) - (10 - Math.abs(blackBalance));
         int diagonalDiff = whiteDiagonal - blackDiagonal;
         
-        // add some specifics for the side our player is playing on
-        int balance;
-        int position;
-        int material;
-        int diagonal;
         if (state.isWhiteToMove()) {// checks if we are white or black
-            position = whitePosition;
-            balance = 10 - Math.abs(whiteBalance);
-            material = whitePieces;
-            diagonal = whiteDiagonal;
+            //consider winning state as top priority
             if (blackPieces == 0) {
                 result += 1000;
             }
         } else {
-            position = -blackPosition;
-            balance = Math.abs(blackBalance) - 10;
-            material = -blackPieces;
-            diagonal = -blackDiagonal;
+            //consider winning state as top priority
             if (whitePieces == 0) {
                 result += 1000;
             }
         }
         // calculates the result with the best parameters
-        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal);
+        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff);
 
         return result;
     }
