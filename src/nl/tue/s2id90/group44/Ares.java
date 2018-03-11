@@ -22,12 +22,15 @@ public class Ares extends DraughtsPlayer {
     private int bestValue = 0;
     int maxSearchDepth;
     int currentSearchDepth = 1;
+    // Array with a value for each position
     int[] evalArray = new int[]{8, 8, 8, 8, 8, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 4,
         4, 5, 4, 4, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 1, 2, 2, 2, 1, 0, 1, 2, 1, 0,
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
+    // Arralylist with all the positions of the leftSide in it
     ArrayList<Integer> leftSide = new ArrayList<>(Arrays.asList(1, 2, 6, 7, 8,
             11, 12, 16, 17, 18, 21, 22, 26, 27, 28, 31, 32, 36, 37, 38, 41, 42, 46, 47,
             48));
+    // Array with all the possible diagonals in it
     int[] diagonalArray = new int[]{1, 7, 12, 18, 23, 29, 34, 40, 45, 0,
         2, 8, 13, 19, 24, 30, 35, 0,
         3, 9, 14, 20, 25, 0,
@@ -50,7 +53,7 @@ public class Ares extends DraughtsPlayer {
     private boolean stopped;
 
     public Ares(int maxSearchDepth) {
-        super("ares.png"); // ToDo: replace with your own icon
+        super("ares.png");
         this.maxSearchDepth = maxSearchDepth;
     }
 
@@ -127,6 +130,7 @@ public class Ares extends DraughtsPlayer {
     int alphaBeta(DraughtsNode node, int alpha, int beta, int depth)
             throws AIStoppedException {
         int returnValue = 0;
+        //For loop implements the iterative deepening
         for (int i = 1; i < depth; i++) {
             currentSearchDepth = i;
             if (node.getState().isWhiteToMove()) {
@@ -168,7 +172,6 @@ public class Ares extends DraughtsPlayer {
             throw new AIStoppedException();
         }
         DraughtsState state = node.getState();
-        // ToDo: write an alphabeta search to compute bestMove and value
         List<Move> moves = state.getMoves(); // get all the moves
         int lastValue = beta; // initialize starting values
         int value = beta;
@@ -176,7 +179,7 @@ public class Ares extends DraughtsPlayer {
 
         for (Move move : moves) { //loop over all the moves
             state.doMove(move);
-            if (moves.size() != 1) {
+            if (moves.size() != 1) { 
                 if (depth > 0 && !state.isEndState()) {
                     value = alphaBetaMax(node, alpha, lastValue, depth - 1);
                 } else {
@@ -196,7 +199,9 @@ public class Ares extends DraughtsPlayer {
 
             state.undoMove(move);
         }
-
+        
+        // makes sure that a move is only set
+        // when alphabeta is in the first iteration
         if (currentSearchDepth == depth) {
             node.setBestMove(bestMove);
             System.err.println("depth= " + depth);
@@ -226,7 +231,11 @@ public class Ares extends DraughtsPlayer {
                     value = evaluate(state);
                 }
             } else {
-                value = alphaBetaMin(node, lastValue, beta, depth);
+                if (depth > 0 && !state.isEndState()) {
+                    value = alphaBetaMin(node, lastValue, beta, depth);
+                } else {
+                    value = evaluate(state);
+                }
             }
             if (value > lastValue) { // set better move as best move if possible
                 bestMove = move;
@@ -235,7 +244,9 @@ public class Ares extends DraughtsPlayer {
 
             state.undoMove(move);
         }
-
+        
+        // makes sure that a move is only set
+        // when alphabeta is in the first iteration
         if (currentSearchDepth == depth) {
             node.setBestMove(bestMove);
             System.err.println("depth= " + depth);
@@ -248,7 +259,7 @@ public class Ares extends DraughtsPlayer {
      */
     // ToDo: write an appropriate evaluation function
     int evaluate(DraughtsState state) {
-        int result = 0;
+        int result = 0; //initialize all values for the evaluation
         int[] pieces = state.getPieces();
         int whitePieces = 0;
         int blackPieces = 0;
@@ -261,6 +272,7 @@ public class Ares extends DraughtsPlayer {
 
         int black = 0;
         int white = 0;
+        //loop over all the diagonals and counts the diagonals
         for (int i : diagonalArray) {
             if (i == 0) {
                 black = 0;
@@ -282,7 +294,8 @@ public class Ares extends DraughtsPlayer {
                 }
             }
         }
-
+        
+        // loop over all the pieces, this part implements matiralDiff, BalanceDiff and  positionDiff
         for (int i = 1; i < pieces.length; i++) {
             switch (pieces[i]) {
             case 1:
@@ -312,25 +325,36 @@ public class Ares extends DraughtsPlayer {
             }
 
         }
+        // calculates all the differences
         int materialDiff = whitePieces - blackPieces;
         int positionDiff = whitePosition - blackPosition;
         int balanceDiff = (10 - Math.abs(whiteBalance)) - (10 - Math.abs(blackBalance));
         int diagonalDiff = whiteDiagonal - blackDiagonal;
-
+        
+        // add some specifics for the side our player is playing on
         int balance;
         int position;
         int material;
         int diagonal;
-        if (state.isWhiteToMove()) {
+        if (state.isWhiteToMove()) {// checks if we are white or black
+            position = whitePosition;
+            balance = 10 - Math.abs(whiteBalance);
+            material = whitePieces;
+            diagonal = whiteDiagonal;
             if (blackPieces == 0) {
                 result += 1000;
             }
         } else {
+            position = -blackPosition;
+            balance = Math.abs(blackBalance) - 10;
+            material = -blackPieces;
+            diagonal = -blackDiagonal;
             if (whitePieces == 0) {
                 result += 1000;
             }
         }
-        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff);
+        // calculates the result with the best parameters
+        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal);
 
         return result;
     }
