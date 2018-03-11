@@ -226,11 +226,7 @@ public class Ares extends DraughtsPlayer {
                     value = evaluate(state);
                 }
             } else {
-                if (depth > 0 && !state.isEndState()) {
-                    value = alphaBetaMin(node, lastValue, beta, depth);
-                } else {
-                    value = evaluate(state);
-                }
+                value = alphaBetaMin(node, lastValue, beta, depth);
             }
             if (value > lastValue) { // set better move as best move if possible
                 bestMove = move;
@@ -326,23 +322,15 @@ public class Ares extends DraughtsPlayer {
         int material;
         int diagonal;
         if (state.isWhiteToMove()) {
-            position = whitePosition;
-            balance = 10 - Math.abs(whiteBalance);
-            material = whitePieces;
-            diagonal = whiteDiagonal;
             if (blackPieces == 0) {
                 result += 1000;
             }
         } else {
-            position = -blackPosition;
-            balance = Math.abs(blackBalance) - 10;
-            material = -blackPieces;
-            diagonal = -blackDiagonal;
             if (whitePieces == 0) {
                 result += 1000;
             }
         }
-        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff + 1 * position + 1 * balance + 1 * material + 1 * diagonal);
+        result += (20 * materialDiff + 3 * positionDiff + 1 * balanceDiff + 10 * diagonalDiff);
 
         return result;
     }
